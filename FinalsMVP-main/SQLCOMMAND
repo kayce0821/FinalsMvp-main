@@ -1,0 +1,125 @@
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+CREATE TABLE `items` (
+  `item_id` int(11) NOT NULL,
+  `item_name` varchar(100) NOT NULL,
+  `serial_number` varchar(100) DEFAULT NULL,
+  `status` enum('Available','Borrowed','Defective','Lost','Archived') NOT NULL DEFAULT 'Available'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `items` (`item_id`, `item_name`, `serial_number`, `status`) VALUES
+(4, 'HP Projector', 'EPSON - 12345', 'Archived'),
+(5, 'Tv5', 'Tv123', 'Borrowed'),
+(6, 'Mouse', 'Samsung 2012', 'Defective'),
+(7, 'Keyboard', 'Logitech 201239', 'Available'),
+(10, 'Hp Mouse', 'Logitech 2012392', 'Available');
+
+CREATE TABLE `requests` (
+  `request_id` int(11) NOT NULL,
+  `item_id` int(11) NOT NULL,
+  `student_id` varchar(50) NOT NULL,
+  `request_status` enum('Pending','Approved','Rejected') DEFAULT 'Pending',
+  `request_date` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `requests` (`request_id`, `item_id`, `student_id`, `request_status`, `request_date`) VALUES
+(1, 10, '', 'Pending', '2026-03-23 15:26:53'),
+(2, 10, '20240157 - C', 'Approved', '2026-03-23 16:10:08'),
+(3, 7, '20240157 - C', 'Rejected', '2026-03-23 16:16:57'),
+(4, 7, '20240157 - C', 'Approved', '2026-03-24 13:25:35');
+
+CREATE TABLE `students` (
+  `student_id` varchar(50) NOT NULL,
+  `full_name` varchar(100) NOT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `course_section` varchar(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `students` (`student_id`, `full_name`, `email`, `course_section`) VALUES
+('20240157 - C', 'Christian Samonte', 'samonte@gmail.com', 'BSIS - 2A'),
+('20240614-C', 'SamonigaxRe', 'rkaede201@gmail.com', '');
+
+CREATE TABLE `transactions` (
+  `transaction_id` int(11) NOT NULL,
+  `student_id` varchar(50) NOT NULL,
+  `item_id` int(11) NOT NULL,
+  `transaction_status` enum('Active','Completed') DEFAULT 'Active',
+  `borrow_date` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `transactions` (`transaction_id`, `student_id`, `item_id`, `transaction_status`, `borrow_date`) VALUES
+(1, '20240157 - C', 7, 'Completed', '2026-03-12 07:58:15'),
+(2, '20240157 - C', 7, 'Completed', '2026-03-12 16:30:55'),
+(3, '20240157 - C', 7, 'Completed', '2026-03-12 16:42:08'),
+(4, '20240614-C', 4, 'Completed', '2026-03-12 16:42:40'),
+(5, '20240157 - C', 7, 'Completed', '2026-03-13 03:40:10'),
+(6, '20240157 - C', 10, 'Completed', '2026-03-23 15:01:43'),
+(7, '20240157 - C', 10, 'Completed', '2026-03-23 15:11:10'),
+(8, '20240157 - C', 10, 'Completed', '2026-03-23 15:11:49'),
+(9, '20240157 - C', 10, 'Completed', '2026-03-23 16:13:18'),
+(10, '20240157 - C', 7, 'Completed', '2026-03-24 13:26:37'),
+(11, '20240157 - C', 7, 'Completed', '2026-03-24 13:30:42');
+
+CREATE TABLE `user` (
+  `user_id` int(11) NOT NULL,
+  `username` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `full_name` varchar(100) NOT NULL,
+  `role` varchar(50) NOT NULL,
+  `status` enum('Active','Archived') DEFAULT 'Active'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `user` (`user_id`, `username`, `password`, `full_name`, `role`, `status`) VALUES
+(1, 'staff123', '$2y$10$1uO8bsXKc0isITRDp4wgaertOiI9DRealLV56noD7jlrqNTWFJLFq', 'johnbenedict', 'Staff', 'Active'),
+(2, 'Admin123', '$2y$10$EidmxhlOt.cg6BhH/eikA.o2gJQAuABr9/0wrLZqh2k9wyJZN3GOS', 'karltelan', 'Admin', 'Active'),
+(3, 'Student123', '$2y$10$Nd50Q2EUgB/l6394.bNWuuO8QhIBWt1TXOkZsOlj8HYRq0TjurRPm', 'tantan', 'Student', ''),
+(4, 'karttiti', '$2y$10$cROIFfGhiEy8n10QXFOWa.YI6nxwbjG..EotlaacHOzh9HasjJbkO', 'karl', 'Student', 'Active'),
+(5, 'jireh123', '$2y$10$V6Q5iUV76QiDiH1ySGQj8uM53AjEy7mD.l0HN4qmve6yPcRNkN3za', 'johnbenedict', 'Staff', ''),
+(6, 'samonte123', '$2y$10$dr5RIfnSl91vNlKt10AF2.b2uWPtLeZsMFRk5v/XQ01sy5F0hdI4G', 'Christian Samonte', 'Student', 'Active'),
+(7, 'Samoniga123', '$2y$10$nN9kKub3upvYrRJkTLjv..i/EChBv2/QGAd1sUxZuuU5tmVMz1NFi', 'SamonigaxRe', 'Staff', 'Active'),
+(8, 'admin123', '$2y$10$lcCQVLE1i1nq0XKs6phZZe98QJSj2PCzhqdd.WmsHrsLf7SIHXAQ2', 'Telanchgrusah', 'Admin', 'Active'),
+(9, 'dfdfdfdfdfsfss12', '$2y$10$3aALiHkI9ZU75CTmIg2/eOWn8.Clu4Qo0orVQ9agC3Y7fL/nRtD5q', '4443!', 'Admin', 'Active'),
+(10, 'hjgjgfgfgfgf!', '$2y$10$Y.uIbxj8Tu.E8rSLWDPfSObVrWi81S7yhX.vS1fQvDCpUl9Wl0lgC', '5555!', 'Student', ''),
+(13, 'superadmin', '$2y$10$lAOqTWCBz/gAN3.XnHEDku0eBGazOe229Nlb5.TuEX5SCgouBcybK', 'System Director', 'Super Admin', 'Active');
+
+ALTER TABLE `items`
+  ADD PRIMARY KEY (`item_id`);
+
+ALTER TABLE `requests`
+  ADD PRIMARY KEY (`request_id`),
+  ADD KEY `requests_ibfk_1` (`item_id`);
+
+ALTER TABLE `students`
+  ADD PRIMARY KEY (`student_id`),
+  ADD UNIQUE KEY `email` (`email`);
+
+ALTER TABLE `transactions`
+  ADD PRIMARY KEY (`transaction_id`),
+  ADD KEY `student_id` (`student_id`),
+  ADD KEY `transactions_ibfk_2` (`item_id`);
+
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`user_id`);
+
+ALTER TABLE `items`
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+ALTER TABLE `requests`
+  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+ALTER TABLE `transactions`
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+ALTER TABLE `user`
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+ALTER TABLE `requests`
+  ADD CONSTRAINT `requests_ibfk_1` FOREIGN KEY (`item_id`) REFERENCES `items` (`item_id`) ON DELETE CASCADE;
+
+ALTER TABLE `transactions`
+  ADD CONSTRAINT `transactions_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `transactions_ibfk_2` FOREIGN KEY (`item_id`) REFERENCES `items` (`item_id`) ON DELETE CASCADE;
+
+COMMIT;
