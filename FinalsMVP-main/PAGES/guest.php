@@ -80,34 +80,30 @@ $result = $mysql->query($query);
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
-            border: 1px solid white; /* Ensures size doesn't shift */
+            border: 1px solid white; 
         }
 
         .hero-cta-btn:hover {
-            background-color: white !important; /* Keeps it white */
+            background-color: white !important; 
             color: var(--primary-green) !important;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3); /* Adds a deeper shadow */
-            transform: translateY(-2px); /* Subtle lift effect */
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3); 
+            transform: translateY(-2px); 
         }
         .login-btn:hover { background-color: white !important; color: var(--primary-green) !important; }
 
+        /* UPDATED HERO SECTION CSS */
         .hero-section {
             padding: 150px 0;
             position: relative;
-            background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-light) 100%);
+            /* Added background image with a color overlay to keep text readable */
+            background: linear-gradient(130deg, rgb(88, 129, 87) 0%, rgba(88, 129, 87, 0.26) 100%), url('bg1.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             color: white;
             overflow: hidden;
         }
         .hero-title { font-weight: 700; font-size: 3.5rem; }
-        .hero-bg-logo {
-            position: absolute;
-            right: 1%;
-            bottom: 15%;
-            width: 400px;
-            opacity: 0.2;
-            z-index: 0;
-            pointer-events: none;
-        }
         .hero-section .container { position: relative; z-index: 1; }
 
         /* SEARCH BAR SECTION */
@@ -181,31 +177,26 @@ $result = $mysql->query($query);
         /* Responsive Mobile Adjustments */
         @media (max-width: 768px) {
             .hero-section {
-                padding: 80px 0; /* Reduced padding on mobile */
+                padding: 80px 0; 
+                background-position: center top;
             }
             .hero-title {
-                font-size: 2.2rem; /* Scale down massive title */
+                font-size: 2.2rem; 
             }
             .hero-subtitle {
-                font-size: 1rem !important; /* Scale down subtitle */
-            }
-            .hero-bg-logo {
-                width: 250px; /* Scale background watermark */
-                bottom: 5%;
-                right: -10%;
+                font-size: 1rem !important; 
             }
             .search-container {
-                margin-top: -25px; /* Slight adjustment for the search bar overlap */
+                margin-top: -25px; 
             }
             .search-wrapper {
-                margin: 0 15px; /* Add margin so it doesn't touch the screen edges */
+                margin: 0 15px; 
                 padding: 10px;
             }
             .search-input-lg {
                 font-size: 1rem;
                 padding: 10px 15px;
             }
-            /* Better mobile pagination wrapping */
             .pagination-custom {
                 flex-wrap: wrap;
                 justify-content: center;
@@ -231,7 +222,7 @@ $result = $mysql->query($query);
     </nav>
 
     <div class="hero-section">
-        <img src="logo.png" class="hero-bg-logo" alt="">
+
         <div class="container text-center text-lg-start">
             <h1 class="hero-title mb-3">Welcome to EquipTrack!</h1>
             <p class="hero-subtitle mb-4 fs-5 opacity-90">
