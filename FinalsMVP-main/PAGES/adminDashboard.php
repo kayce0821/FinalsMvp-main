@@ -168,68 +168,78 @@ $lost_count = $lost_count_result ? $lost_count_result->fetch_row()[0] : 0;
                     <div class="col-md-4 mb-3 mb-md-0">
                         <div class="card stat-card border-0 shadow-sm h-100">
                             <div class="card-body d-flex align-items-center p-4">
-                                <div class="bg-danger-subtle icon-box rounded-circle text-danger me-4"><i class="bi bi-cart-x-fill fs-3"></i></div>
-                                <div><h6 class="text-muted text-uppercase small fw-bold">Borrowed</h6><h2 class="mb-0 fw-bold"><?php echo $borrowed_count; ?></h2></div>
+                                <div class="icon-box rounded-circle me-4" style="background-color: rgba(135, 206, 235, 0.25); color: #87ceeb;">
+                                    <i class="bi bi-cart-x-fill fs-3"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-muted text-uppercase small fw-bold">Borrowed</h6>
+                                    <h2 class="mb-0 fw-bold"><?php echo $borrowed_count; ?></h2>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                   <div class="col-md-4">
                         <div class="card stat-card border-0 shadow-sm h-100">
                             <div class="card-body d-flex align-items-center p-4">
-                                <div class="bg-primary-subtle icon-box rounded-circle text-primary me-4"><i class="bi bi-boxes fs-3"></i></div>
-                                <div><h6 class="text-muted text-uppercase small fw-bold">Total Equipments</h6><h2 class="mb-0 fw-bold"><?php echo $total_count; ?></h2></div>
+                                <div class="icon-box rounded-circle me-4" style="background-color: rgba(227, 183, 240, 0.38); color: #5d0bf5;">
+                                    <i class="bi bi-boxes fs-3"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-muted text-uppercase small fw-bold">Total Equipments</h6>
+                                    <h2 class="mb-0 fw-bold"><?php echo $total_count; ?></h2>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="card border-0 shadow-sm rounded-4">
+                <div class="row mb-4 align-items-stretch">
+                    
+                    <div class="col-lg-4 mb-4 mb-lg-0">
+                        <div class="card border-0 shadow-sm rounded-4 h-100">
                             <div class="card-header bg-white card-header-custom border-0 px-4">
-                                <h5 class="mb-0 text-dark fw-bold">
+                                <h5 class="mb-0 text-dark fw-bold" style="font-size: 1.1rem;">
                                     <i class="bi bi-graph-up-arrow text-primary me-2" style="color: var(--brand-color)!important;"></i> Transaction Status
                                 </h5>
                             </div>
-                            <div class="card-body p-4 chart-card-body">
+                            <div class="card-body p-4 chart-card-body d-flex flex-column justify-content-center">
                                 <div class="line-chart-container">
                                     <canvas id="transactionChart"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="row mb-4">
-                    <div class="col-md-6 mb-4 mb-md-0">
+                    <div class="col-lg-4 mb-4 mb-lg-0">
                         <div class="card border-0 shadow-sm rounded-4 h-100">
                             <div class="card-header bg-white card-header-custom border-0 px-4">
-                                <h5 class="mb-0 text-dark fw-bold">
+                                <h5 class="mb-0 text-dark fw-bold" style="font-size: 1.1rem;">
                                     <i class="bi bi-fire text-warning me-2"></i> Most Popular Equipment
                                 </h5>
                             </div>
-                            <div class="card-body p-4">
-                                <div style="height: 300px;">
+                            <div class="card-body p-4 d-flex flex-column justify-content-center">
+                                <div style="height: 300px; width: 100%;">
                                     <canvas id="topItemsChart"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-lg-4">
                         <div class="card border-0 shadow-sm rounded-4 h-100">
                             <div class="card-header bg-white card-header-custom border-0 px-4">
-                                <h5 class="mb-0 text-dark fw-bold">
+                                <h5 class="mb-0 text-dark fw-bold" style="font-size: 1.1rem;">
                                     <i class="bi bi-exclamation-octagon text-danger me-2"></i> Inventory Health Status
                                 </h5>
                             </div>
-                            <div class="card-body p-4">
-                                <div style="height: 300px;">
+                            <div class="card-body p-4 d-flex flex-column justify-content-center">
+                                <div style="height: 300px; width: 100%;">
                                     <canvas id="lossChart"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    
                 </div>
 
                 <div class="card border-0 shadow-sm rounded-4">
@@ -391,37 +401,41 @@ $lost_count = $lost_count_result ? $lost_count_result->fetch_row()[0] : 0;
             });
 
             // Transaction Status Line Chart
-            const ctx = document.getElementById('transactionChart').getContext('2d');
+             const ctx = document.getElementById('transactionChart').getContext('2d');
             new Chart(ctx, {
-                type: 'line',
+                type: 'bar',
                 data: {
-                    labels: ['Active Borrowing', 'Completed Transactions'],
+                    // Using arrays wraps the text to a second line instead of tilting it
+                    labels: [['Active', 'Borrowing'], ['Completed', 'Transactions']],
                     datasets: [{
-                        label: 'Transactions',
+                        label: 'Count',
                         data: [<?php echo $chart_active; ?>, <?php echo $chart_completed; ?>],
-                        borderColor: '#3a5a40',
-                        borderWidth: 3,
-                        tension: 0.4,
-                        fill: true,
-                        backgroundColor: 'rgba(58, 90, 64, 0.1)',
-                        pointStyle: 'circle',
-                        pointRadius: 8,
-                        pointHoverRadius: 12,
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: '#3a5a40',
-                        pointBorderWidth: 3
+                        backgroundColor: ['#87ceeb', '#5AA27C'],
+                        borderRadius: 8,
+                        maxBarThickness: 70 // Prevents the bars from becoming too wide
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true, ticks: { stepSize: 1, color: '#6c757d' }, grid: { display: true, drawBorder: false } },
-                        x: { ticks: { color: '#6c757d', font: { weight: 'bold' } }, grid: { display: false } }
-                    },
                     plugins: {
-                        legend: { display: false },
-                        tooltip: { backgroundColor: '#3a5a40', padding: 12, displayColors: false, titleFont: { size: 14 } }
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            ticks: { stepSize: 1 } 
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: {
+                                maxRotation: 0,
+                                minRotation: 0,
+                                font: {
+                                    size: 11 
+                                }
+                            }
+                        }
                     }
                 }
             });
