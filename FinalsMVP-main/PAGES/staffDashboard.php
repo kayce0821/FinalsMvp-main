@@ -48,7 +48,7 @@ if ($result && $result->num_rows > 0) {
 }
 
 // --- CHART DATA FETCHING ---
-// Line Chart Data
+// Bar Chart Data
 $chart_active = $mysql->query("SELECT COUNT(*) FROM transactions WHERE transaction_status = 'Active'")->fetch_row()[0];
 $chart_completed = $mysql->query("SELECT COUNT(*) FROM transactions WHERE transaction_status = 'Completed'")->fetch_row()[0];
 
@@ -78,7 +78,6 @@ $defective_count = $defective_count_result ? $defective_count_result->fetch_row(
 $lost_count_result = $mysql->query("SELECT COUNT(*) FROM items WHERE status = 'Lost'");
 $lost_count = $lost_count_result ? $lost_count_result->fetch_row()[0] : 0;
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -116,6 +115,9 @@ $lost_count = $lost_count_result ? $lost_count_result->fetch_row()[0] : 0;
             border: 1px solid #eaedf1; 
             min-height: 280px; 
         }
+        .table-custom-wrapper .table-responsive {
+            border-radius: 1rem;
+        }
         .table thead th { background-color: #f8f9fa; color: #6c757d; font-weight: 600; letter-spacing: 0.5px; border-bottom: 2px solid #eaedf1; }
         .table tbody tr { transition: background-color 0.2s ease; }
         .table tbody tr:hover { background-color: #f8fbfa; }
@@ -124,11 +126,11 @@ $lost_count = $lost_count_result ? $lost_count_result->fetch_row()[0] : 0;
         .dropdown-item { transition: all 0.2s; }
         .dropdown-item:hover { background-color: #f8f9fa; transform: translateX(3px); }
 
-        /* Responsive Line Chart Container */
+      
         .line-chart-container {
             position: relative;
             height: 300px;
-            width: 100%;
+            width: 100%; /* Changed to 100% so it fills the column */
         }
 
         /* Mobile Adjustments */
@@ -136,11 +138,18 @@ $lost_count = $lost_count_result ? $lost_count_result->fetch_row()[0] : 0;
             .content-wrapper, .content-wrapper.expanded { 
                 width: 100%; 
             }
+            .container-fluid.p-4 {
+                padding: 1.5rem 1rem !important;
+            }
             .line-chart-container {
                 height: 220px; /* Reduced height specifically for mobile */
             }
             .chart-card-body {
                 padding: 1rem !important; /* Less padding on small screens to give chart more room */
+            }
+            .table th, .table td {
+                white-space: nowrap;
+                padding: 0.75rem 0.5rem !important;
             }
         }
     </style>
@@ -175,68 +184,78 @@ $lost_count = $lost_count_result ? $lost_count_result->fetch_row()[0] : 0;
                     <div class="col-md-4 mb-3 mb-md-0">
                         <div class="card stat-card border-0 shadow-sm h-100">
                             <div class="card-body d-flex align-items-center p-4">
-                                <div class="bg-danger-subtle icon-box rounded-circle text-danger me-4"><i class="bi bi-cart-x-fill fs-3"></i></div>
-                                <div><h6 class="text-muted text-uppercase small fw-bold">Borrowed</h6><h2 class="mb-0 fw-bold"><?php echo $borrowed_count; ?></h2></div>
+                                <div class="icon-box rounded-circle me-4" style="background-color: rgba(135, 206, 235, 0.25); color: #87ceeb;">
+                                    <i class="bi bi-cart-x-fill fs-3"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-muted text-uppercase small fw-bold">Borrowed</h6>
+                                    <h2 class="mb-0 fw-bold"><?php echo $borrowed_count; ?></h2>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                   <div class="col-md-4">
                         <div class="card stat-card border-0 shadow-sm h-100">
                             <div class="card-body d-flex align-items-center p-4">
-                                <div class="bg-primary-subtle icon-box rounded-circle text-primary me-4"><i class="bi bi-boxes fs-3"></i></div>
-                                <div><h6 class="text-muted text-uppercase small fw-bold">Total Equipments</h6><h2 class="mb-0 fw-bold"><?php echo $total_count; ?></h2></div>
+                                <div class="icon-box rounded-circle me-4" style="background-color: rgba(227, 183, 240, 0.38); color: #5d0bf5;">
+                                    <i class="bi bi-boxes fs-3"></i>
+                                </div>
+                                <div>
+                                    <h6 class="text-muted text-uppercase small fw-bold">Total Equipments</h6>
+                                    <h2 class="mb-0 fw-bold"><?php echo $total_count; ?></h2>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="card border-0 shadow-sm rounded-4">
+                <div class="row mb-4 align-items-stretch">
+                    
+                    <div class="col-lg-4 mb-4 mb-lg-0">
+                        <div class="card border-0 shadow-sm rounded-4 h-100">
                             <div class="card-header bg-white card-header-custom border-0 px-4">
-                                <h5 class="mb-0 text-dark fw-bold">
+                                <h5 class="mb-0 text-dark fw-bold" style="font-size: 1.1rem;">
                                     <i class="bi bi-graph-up-arrow text-primary me-2" style="color: var(--brand-color)!important;"></i> Transaction Status
                                 </h5>
                             </div>
-                            <div class="card-body p-4 chart-card-body">
+                            <div class="card-body p-4 chart-card-body d-flex flex-column justify-content-center">
                                 <div class="line-chart-container">
                                     <canvas id="transactionChart"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="row mb-4">
-                    <div class="col-md-6 mb-4 mb-md-0">
+                    <div class="col-lg-4 mb-4 mb-lg-0">
                         <div class="card border-0 shadow-sm rounded-4 h-100">
                             <div class="card-header bg-white card-header-custom border-0 px-4">
-                                <h5 class="mb-0 text-dark fw-bold">
+                                <h5 class="mb-0 text-dark fw-bold" style="font-size: 1.1rem;">
                                     <i class="bi bi-fire text-warning me-2"></i> Most Popular Equipment
                                 </h5>
                             </div>
-                            <div class="card-body p-4">
-                                <div style="height: 300px;">
+                            <div class="card-body p-4 d-flex flex-column justify-content-center">
+                                <div style="height: 300px; width: 100%;">
                                     <canvas id="topItemsChart"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-lg-4">
                         <div class="card border-0 shadow-sm rounded-4 h-100">
                             <div class="card-header bg-white card-header-custom border-0 px-4">
-                                <h5 class="mb-0 text-dark fw-bold">
+                                <h5 class="mb-0 text-dark fw-bold" style="font-size: 1.1rem;">
                                     <i class="bi bi-exclamation-octagon text-danger me-2"></i> Inventory Health Status
                                 </h5>
                             </div>
-                            <div class="card-body p-4">
-                                <div style="height: 300px;">
+                            <div class="card-body p-4 d-flex flex-column justify-content-center">
+                                <div style="height: 300px; width: 100%;">
                                     <canvas id="lossChart"></canvas>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    
                 </div>
 
                 <div class="card border-0 shadow-sm rounded-4 mb-4">
@@ -277,72 +296,74 @@ $lost_count = $lost_count_result ? $lost_count_result->fetch_row()[0] : 0;
                         <h5 class="mb-0 text-dark fw-bold"><i class="bi bi-list-task text-primary me-2" style="color: var(--brand-color)!important;"></i> Currently Borrowed Equipment</h5>
                     </div>
                     <div class="card-body p-0">
-                        <div class="table-responsive table-custom-wrapper m-3">
-                            <table class="table align-middle mb-0 bg-white">
-                                <thead>
-                                    <tr class="text-uppercase" style="font-size: 0.8rem;">
-                                        <th class="ps-4 py-3 border-0">Student ID</th>
-                                        <th class="py-3 border-0">Equipment</th>
-                                        <th class="py-3 border-0">Date Borrowed</th>
-                                        <th class="py-3 border-0">Expected Return</th>
-                                        <th class="text-center py-3 border-0">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($transactions as $row): ?>
-                                    <tr>
-                                        <td class="ps-4 py-3 fw-bold text-dark">
-                                            <span class="badge bg-light text-dark border px-2 py-1"><?php echo htmlspecialchars($row['student_id']); ?></span>
-                                        </td>
-                                        <td class="py-3 fw-semibold text-dark">
-                                            <?php echo htmlspecialchars($row['item_name']); ?> 
-                                            <span class="text-muted small">(#<?php echo $row['item_id']; ?>)</span>
-                                        </td>
-                                        <td class="py-3 text-muted small">
-                                            <i class="bi bi-calendar2-event text-secondary me-1"></i> <?php echo date('M d, Y h:i A', strtotime($row['borrow_date'])); ?>
-                                        </td>
-                                        <td class="py-3">
-                                            <?php if (!empty($row['expected_return_time'])): ?>
-                                                <span class="badge bg-light text-dark border px-2 py-1 font-monospace shadow-sm">
-                                                    <i class="bi bi-clock-history text-warning me-1"></i> 
-                                                    <?php echo date('h:i A', strtotime($row['expected_return_time'])); ?>
-                                                </span>
-                                            <?php else: ?>
-                                                <span class="badge bg-light text-secondary border px-2 py-1">N/A</span>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td class="text-center py-3">
-                                            <div class="dropdown">
-                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle px-3 fw-bold border-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    Manage
-                                                </button>
-                                                <ul class="dropdown-menu shadow border-0 py-2" style="border-radius: 0.8rem;">
-                                                    <li>
-                                                        <a class="dropdown-item text-success fw-bold return-btn" href="../ACTIONS/process_return.php?tid=<?php echo $row['transaction_id']; ?>&status=Returned">
-                                                            <i class="bi bi-check2-circle me-2"></i> Good Return
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="dropdown-item text-warning fw-bold defective-btn" href="../ACTIONS/process_return.php?tid=<?php echo $row['transaction_id']; ?>&status=Defective">
-                                                            <i class="bi bi-exclamation-triangle me-2"></i> Mark Defective
-                                                        </a>
-                                                    </li>
-                                                    <li><hr class="dropdown-divider opacity-25"></li>
-                                                    <li>
-                                                        <a class="dropdown-item text-danger fw-bold lost-btn" href="../ACTIONS/process_return.php?tid=<?php echo $row['transaction_id']; ?>&status=Lost">
-                                                            <i class="bi bi-x-circle me-2"></i> Mark as Lost
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <?php endforeach; ?>
-                                    <?php if (empty($transactions)): ?>
-                                        <tr><td colspan="5" class="text-center py-5 text-muted"><i class="bi bi-inbox fs-1 opacity-50 mb-2 d-block"></i>No active transactions.</td></tr>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
+                        <div class="table-custom-wrapper m-3">
+                            <div class="table-responsive">
+                                <table class="table align-middle mb-0 bg-white">
+                                    <thead>
+                                        <tr class="text-uppercase" style="font-size: 0.8rem;">
+                                            <th class="ps-4 py-3 border-0">Student ID</th>
+                                            <th class="py-3 border-0">Equipment</th>
+                                            <th class="py-3 border-0">Date Borrowed</th>
+                                            <th class="py-3 border-0">Expected Return</th>
+                                            <th class="text-center py-3 border-0">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($transactions as $row): ?>
+                                        <tr>
+                                            <td class="ps-4 py-3 fw-bold text-dark">
+                                                <span class="badge bg-light text-dark border px-2 py-1"><?php echo htmlspecialchars($row['student_id']); ?></span>
+                                            </td>
+                                            <td class="py-3 fw-semibold text-dark">
+                                                <?php echo htmlspecialchars($row['item_name']); ?> 
+                                                <span class="text-muted small">(#<?php echo $row['item_id']; ?>)</span>
+                                            </td>
+                                            <td class="py-3 text-muted small">
+                                                <i class="bi bi-calendar2-event text-secondary me-1"></i> <?php echo date('M d, Y h:i A', strtotime($row['borrow_date'])); ?>
+                                            </td>
+                                            <td class="py-3">
+                                                <?php if (!empty($row['expected_return_time'])): ?>
+                                                    <span class="badge bg-light text-dark border px-2 py-1 font-monospace shadow-sm">
+                                                        <i class="bi bi-clock-history text-warning me-1"></i> 
+                                                        <?php echo date('h:i A', strtotime($row['expected_return_time'])); ?>
+                                                    </span>
+                                                <?php else: ?>
+                                                    <span class="badge bg-light text-secondary border px-2 py-1">N/A</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td class="text-center py-3">
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle px-3 fw-bold border-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        Manage
+                                                    </button>
+                                                    <ul class="dropdown-menu shadow border-0 py-2" style="border-radius: 0.8rem;">
+                                                        <li>
+                                                            <a class="dropdown-item text-success fw-bold return-btn" href="../ACTIONS/process_return.php?tid=<?php echo $row['transaction_id']; ?>&status=Returned">
+                                                                <i class="bi bi-check2-circle me-2"></i> Good Return
+                                                            </a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item text-warning fw-bold defective-btn" href="../ACTIONS/process_return.php?tid=<?php echo $row['transaction_id']; ?>&status=Defective">
+                                                                <i class="bi bi-exclamation-triangle me-2"></i> Mark Defective
+                                                            </a>
+                                                        </li>
+                                                        <li><hr class="dropdown-divider opacity-25"></li>
+                                                        <li>
+                                                            <a class="dropdown-item text-danger fw-bold lost-btn" href="../ACTIONS/process_return.php?tid=<?php echo $row['transaction_id']; ?>&status=Lost">
+                                                                <i class="bi bi-x-circle me-2"></i> Mark as Lost
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                        <?php if (empty($transactions)): ?>
+                                            <tr><td colspan="5" class="text-center py-5 text-muted"><i class="bi bi-inbox fs-1 opacity-50 mb-2 d-block"></i>No active transactions.</td></tr>
+                                        <?php endif; ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -416,7 +437,7 @@ $lost_count = $lost_count_result ? $lost_count_result->fetch_row()[0] : 0;
                     labels: ['Defective', 'Lost'],
                     datasets: [{
                         data: [<?php echo $defective_count; ?>, <?php echo $lost_count; ?>],
-                        backgroundColor: ['#ffc107', '#dc3545'],
+                        backgroundColor: ['#FF6700', '#dc3545'],
                         borderWidth: 2,
                         borderColor: '#fff'
                     }]
@@ -430,38 +451,42 @@ $lost_count = $lost_count_result ? $lost_count_result->fetch_row()[0] : 0;
                 }
             });
 
-            // Transaction Status Line Chart
+           // Transaction Status Bar Chart
             const ctx = document.getElementById('transactionChart').getContext('2d');
             new Chart(ctx, {
-                type: 'line',
+                type: 'bar',
                 data: {
-                    labels: ['Active Borrowing', 'Completed Transactions'],
+                    // Using arrays wraps the text to a second line instead of tilting it
+                    labels: [['Active', 'Borrowing'], ['Completed', 'Transactions']],
                     datasets: [{
-                        label: 'Transactions',
+                        label: 'Count',
                         data: [<?php echo $chart_active; ?>, <?php echo $chart_completed; ?>],
-                        borderColor: '#3a5a40',
-                        borderWidth: 3,
-                        tension: 0.4,
-                        fill: true,
-                        backgroundColor: 'rgba(58, 90, 64, 0.1)',
-                        pointStyle: 'circle',
-                        pointRadius: 8,
-                        pointHoverRadius: 12,
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: '#3a5a40',
-                        pointBorderWidth: 3
+                        backgroundColor: ['#87ceeb', '#5AA27C'],
+                        borderRadius: 8,
+                        maxBarThickness: 70 // Prevents the bars from becoming too wide
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true, ticks: { stepSize: 1, color: '#6c757d' }, grid: { display: true, drawBorder: false } },
-                        x: { ticks: { color: '#6c757d', font: { weight: 'bold' } }, grid: { display: false } }
-                    },
                     plugins: {
-                        legend: { display: false },
-                        tooltip: { backgroundColor: '#3a5a40', padding: 12, displayColors: false, titleFont: { size: 14 } }
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            ticks: { stepSize: 1 } 
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: {
+                                maxRotation: 0,
+                                minRotation: 0,
+                                font: {
+                                    size: 11 
+                                }
+                            }
+                        }
                     }
                 }
             });
